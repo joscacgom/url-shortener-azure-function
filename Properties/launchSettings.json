@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "ur_shortener_azure_function": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7237",
+      "launchBrowser": false
+    }
+  }
+}
