@@ -42,8 +42,8 @@ namespace UrlShortener.Function
                     return new NotFoundResult();
                 }
 
-                existingUrl.OriginalUrl = url.OriginalUrl;
-                existingUrl.ShortUrl = GetShortUrl(url.OriginalUrl);
+                existingUrl.Status = url.Status;
+
                 _context.Update(existingUrl);
 
                 await _context.SaveChangesAsync();
@@ -61,20 +61,6 @@ namespace UrlShortener.Function
             }
            
             return new BadRequestResult();
-        }
-
-         private string GetShortUrl(string longUrl)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-            var random = new Random();
-            var result = new char[6];
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = chars[random.Next(chars.Length)];
-            }
-
-            return new string(result);
         }
 
     }

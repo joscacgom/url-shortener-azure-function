@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using UrlShortener.Function.Data;
 using UrlShortener.Function.Models;
+using UrlShortener.Function.SD;
 
 namespace UrlShortener.Function
 {
@@ -29,7 +30,13 @@ namespace UrlShortener.Function
 
                 if(url == null){
                     return new NotFoundResult();
+                }else if(url.Status == Status.Inactive){
+                    return new BadRequestResult();
                 }
+
+                url.Clicks++;
+                _context.Update(url);
+                await _context.SaveChangesAsync();
 
                 return new OkObjectResult(url.OriginalUrl);
             }
