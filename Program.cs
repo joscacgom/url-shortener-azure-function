@@ -8,17 +8,19 @@ using Azure.Identity;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
-    .ConfigureServices(services => {
+    .ConfigureServices(services =>
+    {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
-        services.AddDbContext<AppDbContext>(options => {
-            // var keyVaultUrl = new Uri(Environment.GetEnvironmentVariable("KeyVaultUrl"));
-            // var secretClient = new SecretClient(keyVaultUrl, new DefaultAzureCredential());
-            // var connectionString = secretClient.GetSecret("sql").Value.Value;
-            // options.UseSqlServer(connectionString);
-
-            var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
+        services.AddDbContext<AppDbContext>(options =>
+        {
+            var keyVaultUrl = new Uri(Environment.GetEnvironmentVariable("KeyVaultUrl"));
+            var secretClient = new SecretClient(keyVaultUrl, new DefaultAzureCredential());
+            var connectionString = secretClient.GetSecret("sql").Value.Value;
             options.UseSqlServer(connectionString);
+
+            //var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
+            //options.UseSqlServer(connectionString);
         });
     })
     .Build();

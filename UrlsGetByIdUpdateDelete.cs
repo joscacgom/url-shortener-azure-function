@@ -22,23 +22,28 @@ namespace UrlShortener.Function
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous,
              "get","put","delete", Route = "urls/{id}")] HttpRequest req
-            ,int id)
+            , int id)
         {
-            if(req.Method == HttpMethods.Get){
+            if (req.Method == HttpMethods.Get)
+            {
                 var url = await _context.Url.FirstOrDefaultAsync(u => u.Id == id);
 
-                if(url == null){
+                if (url == null)
+                {
                     return new NotFoundResult();
                 }
 
                 return new OkObjectResult(url);
-            } else if(req.Method == HttpMethods.Put){
+            }
+            else if (req.Method == HttpMethods.Put)
+            {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var url = JsonConvert.DeserializeObject<Url>(requestBody);
                 url.Id = id;
                 var existingUrl = await _context.Url.FirstOrDefaultAsync(u => u.Id == id);
 
-                if(existingUrl == null){
+                if (existingUrl == null)
+                {
                     return new NotFoundResult();
                 }
 
@@ -48,10 +53,13 @@ namespace UrlShortener.Function
 
                 await _context.SaveChangesAsync();
                 return new OkObjectResult(existingUrl);
-            } else if(req.Method == HttpMethods.Delete){
+            }
+            else if (req.Method == HttpMethods.Delete)
+            {
                 var url = await _context.Url.FirstOrDefaultAsync(u => u.Id == id);
 
-                if(url == null){
+                if (url == null)
+                {
                     return new NotFoundResult();
                 }
 
@@ -59,7 +67,7 @@ namespace UrlShortener.Function
                 await _context.SaveChangesAsync();
                 return new OkResult();
             }
-           
+
             return new BadRequestResult();
         }
 

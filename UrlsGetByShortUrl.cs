@@ -2,10 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using UrlShortener.Function.Data;
-using UrlShortener.Function.Models;
 using UrlShortener.Function.SD;
 
 namespace UrlShortener.Function
@@ -23,14 +20,18 @@ namespace UrlShortener.Function
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous,
              "get", Route = "urlsByShortUrl/{shortUrl}")] HttpRequest req
-            ,string shortUrl)
+            , string shortUrl)
         {
-            if(req.Method == HttpMethods.Get){
+            if (req.Method == HttpMethods.Get)
+            {
                 var url = await _context.Url.FirstOrDefaultAsync(u => u.ShortUrl == shortUrl);
 
-                if(url == null){
+                if (url == null)
+                {
                     return new NotFoundResult();
-                }else if(url.Status == Status.Inactive){
+                }
+                else if (url.Status == Status.Inactive)
+                {
                     return new BadRequestResult();
                 }
 
@@ -40,7 +41,7 @@ namespace UrlShortener.Function
 
                 return new OkObjectResult(url.OriginalUrl);
             }
-           
+
             return new BadRequestResult();
         }
 
