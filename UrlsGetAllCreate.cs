@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -19,6 +20,7 @@ namespace UrlShortener.Function
             _context = context;
         }
 
+        [Authorize]
         [Function("UrlsGetAllCreate")]
         public async Task<IActionResult> Run(
                     [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "urls")] HttpRequest req)
