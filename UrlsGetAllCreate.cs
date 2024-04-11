@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -19,24 +20,27 @@ namespace UrlShortener.Function
         }
 
         [Function("UrlsGetAllCreate")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get","post", Route = "urls")] HttpRequest req)
+        public async Task<IActionResult> Run(
+                    [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "urls")] HttpRequest req)
         {
-            if(req.Method == HttpMethods.Post)
+            if (req.Method == HttpMethods.Post)
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var url = JsonConvert.DeserializeObject<Url>(requestBody);
+
                 url.ShortUrl = GetShortUrl(url.OriginalUrl);
                 _context.Url.Add(url);
                 await _context.SaveChangesAsync();
-                return new CreatedResult("/urls",url);
+                return new CreatedResult("/urls", url);
             }
-            else if(req.Method == HttpMethods.Get)
+            else if (req.Method == HttpMethods.Get)
             {
                 var urls = await _context.Url.ToListAsync();
                 return new OkObjectResult(urls);
             }
             return new BadRequestResult();
         }
+
 
         private string GetShortUrl(string longUrl)
         {
