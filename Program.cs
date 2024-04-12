@@ -8,6 +8,7 @@ using Azure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 using Microsoft.Extensions.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -27,6 +28,8 @@ var host = new HostBuilder()
         });
 
         var config = context.Configuration;
+        JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
 
          services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(options =>

@@ -1,12 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Web.Resource;
 using UrlShortener.Function.Data;
 using UrlShortener.Function.SD;
 
 namespace UrlShortener.Function
 {
+    [Authorize]
+    [RequiredScope("tasks.read", "tasks.write")]
     public class UrlsGetByShortUrl
     {
         private readonly AppDbContext _context;

@@ -5,22 +5,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
+using Microsoft.Identity.Web.Resource;
 using Newtonsoft.Json;
 using UrlShortener.Function.Data;
 using UrlShortener.Function.Models;
 
 namespace UrlShortener.Function
 {
+    [Authorize]
+    [RequiredScope("tasks.read", "tasks.write")]
     public class UrlsGetAllCreate
     {
         private readonly AppDbContext _context;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public UrlsGetAllCreate(AppDbContext context)
+
+        public UrlsGetAllCreate(AppDbContext context, IHttpContextAccessor contextAccessor)
         {
             _context = context;
+            _contextAccessor = contextAccessor;
         }
 
-        [Authorize]
         [Function("UrlsGetAllCreate")]
         public async Task<IActionResult> Run(
                     [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "urls")] HttpRequest req)

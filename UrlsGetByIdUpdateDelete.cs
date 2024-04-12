@@ -1,14 +1,18 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Web.Resource;
 using Newtonsoft.Json;
 using UrlShortener.Function.Data;
 using UrlShortener.Function.Models;
 
 namespace UrlShortener.Function
 {
+    [Authorize]
+    [RequiredScope("tasks.read", "tasks.write")]
     public class UrlsGetByIdUpdateDelete
     {
         private readonly AppDbContext _context;
