@@ -1,11 +1,8 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Client;
 using Microsoft.Identity.Web.Resource;
 using Newtonsoft.Json;
 using UrlShortener.Function.Data;
@@ -36,7 +33,8 @@ namespace UrlShortener.Function
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var url = JsonConvert.DeserializeObject<Url>(requestBody);
 
-                url.ShortUrl = GetShortUrl(url.OriginalUrl);
+                url.ShortUrl = GetShortUrl();
+
                 _context.Url.Add(url);
                 await _context.SaveChangesAsync();
                 return new CreatedResult("/urls", url);
@@ -50,7 +48,7 @@ namespace UrlShortener.Function
         }
 
 
-        private string GetShortUrl(string longUrl)
+        private string GetShortUrl()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 

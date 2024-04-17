@@ -10,7 +10,7 @@ namespace UrlShortener.Function.Models
 
         public int Clicks { get; set; } = 0;
 
-       // public string UserId { get; set; } = "";
+       public string UserId { get; set; } = "";
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

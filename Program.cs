@@ -26,6 +26,7 @@ var host = new HostBuilder()
             var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
             options.UseSqlServer(connectionString);
         });
+        services.AddHttpContextAccessor();
 
         var config = context.Configuration;
         JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
