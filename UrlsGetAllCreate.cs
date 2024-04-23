@@ -1,36 +1,45 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Web.Resource;
 using Newtonsoft.Json;
 using UrlShortener.Function.Data;
 using UrlShortener.Function.Models;
 
 namespace UrlShortener.Function
 {
+    [Authorize]
+    [RequiredScope("tasks.read", "tasks.write")]
     public class UrlsGetAllCreate
     {
         private readonly AppDbContext _context;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public UrlsGetAllCreate(AppDbContext context)
+
+        public UrlsGetAllCreate(AppDbContext context, IHttpContextAccessor contextAccessor)
         {
             _context = context;
+            _contextAccessor = contextAccessor;
         }
 
         [Function("UrlsGetAllCreate")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get","post", Route = "urls")] HttpRequest req)
+        public async Task<IActionResult> Run(
+                    [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "urls")] HttpRequest req)
         {
-            if(req.Method == HttpMethods.Post)
+            if (req.Method == HttpMethods.Post)
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var url = JsonConvert.DeserializeObject<Url>(requestBody);
-                url.ShortUrl = GetShortUrl(url.OriginalUrl);
+
+                url.ShortUrl = GetShortUrl();
+
                 _context.Url.Add(url);
                 await _context.SaveChangesAsync();
-                return new CreatedResult("/urls",url);
+                return new CreatedResult("/urls", url);
             }
-            else if(req.Method == HttpMethods.Get)
+            else if (req.Method == HttpMethods.Get)
             {
                 var urls = await _context.Url.ToListAsync();
                 return new OkObjectResult(urls);
@@ -38,7 +47,8 @@ namespace UrlShortener.Function
             return new BadRequestResult();
         }
 
-        private string GetShortUrl(string longUrl)
+
+        private string GetShortUrl()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
