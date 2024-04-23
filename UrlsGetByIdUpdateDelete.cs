@@ -54,11 +54,6 @@ namespace UrlShortener.Function
                     return new NotFoundResult();
                 }
 
-                if(existingUrl.UserId != user.FindFirst(ClaimTypes.NameIdentifier)?.Value)
-                {
-                    return new UnauthorizedResult();
-                }
-
                 existingUrl.Status = url.Status;
 
                 _context.Update(existingUrl);
@@ -73,11 +68,6 @@ namespace UrlShortener.Function
                 if (url == null)
                 {
                     return new NotFoundResult();
-                }
-
-                if(url.UserId != user.FindFirst(ClaimTypes.NameIdentifier)?.Value)
-                {
-                    return new UnauthorizedResult();
                 }
 
                 _context.Url.Remove(url);
