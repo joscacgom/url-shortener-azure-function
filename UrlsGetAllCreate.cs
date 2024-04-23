@@ -15,13 +15,10 @@ namespace UrlShortener.Function
     public class UrlsGetAllCreate
     {
         private readonly AppDbContext _context;
-        private readonly IHttpContextAccessor _contextAccessor;
 
-
-        public UrlsGetAllCreate(AppDbContext context, IHttpContextAccessor contextAccessor)
+        public UrlsGetAllCreate(AppDbContext context)
         {
             _context = context;
-            _contextAccessor = contextAccessor;
         }
 
         [Function("UrlsGetAllCreate")]

@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +15,10 @@ namespace UrlShortener.Function
     public class UrlsGetByIdUpdateDelete
     {
         private readonly AppDbContext _context;
-        private readonly IHttpContextAccessor _contextAccessor;
 
-        public UrlsGetByIdUpdateDelete(AppDbContext context, IHttpContextAccessor contextAccessor)
+        public UrlsGetByIdUpdateDelete(AppDbContext context)
         {
             _context = context;
-            _contextAccessor = contextAccessor;
         }
 
         [Function("UrlsGetByIdUpdateDelete")]
@@ -30,7 +27,6 @@ namespace UrlShortener.Function
              "get","put","delete", Route = "urls/{id}")] HttpRequest req
             , int id)
         {
-            var user = _contextAccessor?.HttpContext?.User;
             if (req.Method == HttpMethods.Get)
             {
                 var url = await _context.Url.FirstOrDefaultAsync(u => u.Id == id);
@@ -54,11 +50,6 @@ namespace UrlShortener.Function
                     return new NotFoundResult();
                 }
 
-                if(existingUrl.UserId != user.FindFirst(ClaimTypes.NameIdentifier)?.Value)
-                {
-                    return new UnauthorizedResult();
-                }
-
                 existingUrl.Status = url.Status;
 
                 _context.Update(existingUrl);
@@ -73,11 +64,6 @@ namespace UrlShortener.Function
                 if (url == null)
                 {
                     return new NotFoundResult();
-                }
-
-                if(url.UserId != user.FindFirst(ClaimTypes.NameIdentifier)?.Value)
-                {
-                    return new UnauthorizedResult();
                 }
 
                 _context.Url.Remove(url);

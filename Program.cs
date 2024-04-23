@@ -3,12 +3,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using UrlShortener.Function.Data;
 using Microsoft.EntityFrameworkCore;
-using Azure.Security.KeyVault.Secrets;
-using Azure.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Identity.Web;
-using Microsoft.Extensions.Configuration;
-using System.IdentityModel.Tokens.Jwt;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -18,6 +12,7 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
         services.AddDbContext<AppDbContext>(options =>
         {
+            // Alternative with azure key vault
             // var keyVaultUrl = new Uri(Environment.GetEnvironmentVariable("KeyVaultUrl"));
             // var secretClient = new SecretClient(keyVaultUrl, new DefaultAzureCredential());
             // var connectionString = secretClient.GetSecret("sql").Value.Value;
@@ -27,21 +22,6 @@ var host = new HostBuilder()
             options.UseSqlServer(connectionString);
         });
         services.AddHttpContextAccessor();
-
-        var config = context.Configuration;
-        JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
-
-         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddMicrosoftIdentityWebApi(options =>
-            {
-                config.Bind("AzureAdB2C", options);
-            }, options =>
-            {
-                config.Bind("AzureAdB2C", options);
-            });
-
-        services.AddAuthorization();
     })
     .Build();
 

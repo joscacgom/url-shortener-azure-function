@@ -13,20 +13,16 @@ namespace UrlShortener.Function
     public class UrlsGetAllByUserId
     {
         private readonly AppDbContext _context;
-        private readonly IHttpContextAccessor _contextAccessor;
 
-
-        public UrlsGetAllByUserId(AppDbContext context, IHttpContextAccessor contextAccessor)
+        public UrlsGetAllByUserId(AppDbContext context)
         {
             _context = context;
-            _contextAccessor = contextAccessor;
         }
 
         [Function("UrlsGetAllByUserId")]
         public async Task<IActionResult> Run(
                     [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "urlsByUserId/{userId}")] HttpRequest req, string userId)
         {
-            var user = _contextAccessor?.HttpContext?.User;
             if (req.Method == HttpMethods.Get)
             {
                 var urls = await _context.Url.Where(u => u.UserId == userId).ToListAsync();
